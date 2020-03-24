@@ -1,0 +1,11 @@
+---
+applications:
+- name: iat
+  disk_quota: 32M
+  memory: 32M
+  instances: 1
+  host: iat
+  path: .
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack#v1.3.10
+  env:
+    FORCE_HTTPS: 1

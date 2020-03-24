@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Annotation Tool </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/myCss.css">
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">IAT</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav" style="display:inline-block;">
+                    <li>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Load File <span class="caret"></span> </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <label for="uploadImage" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Upload Image <span class="glyphicon glyphicon-folder-open"></span>
+                                </label>
+                                <input class="upload" id="uploadImage" type="file" name="myPhoto"></input>
+                            </li>
+
+                            <li>
+                                <label for="LoadJSON" class="custom-file-upload">
+                                    <i class="fa fa-cloud-upload"></i> Load Layers <span class="glyphicon glyphicon-pencil">
+                                    </span><span class="glyphicon glyphicon-menu-hamburger"></span>
+                                </label>
+                                <input class="upload" id="LoadJSON" type="file" name="myJSON"></input>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Export File <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a id="save_png"> PNG Image <span class="glyphicon glyphicon-download-alt"></span></a></li>
+                            <li><a id="save_svg"> Vector Image   <span class="glyphicon glyphicon-export"></span> </a></li>
+                            <li><a id="save_json"> JSON Layers <span class="glyphicon glyphicon-menu-hamburger"></span></a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </div>
+    </nav>
+
+    <div class="">
+        <div class="row content">
+            <div class="col-sm-2 sidenav text-center" id="left_col">
+                <div class="well ">
+                    <div class="w3-row w3-container">
+                        <div style=" display: flex; justify-content: space-around">
+                            <div class="w3-col s4  w3-center" style="display: inline-block; ">
+                                <input type="checkbox" id="editor_draw_erase" disabled data-toggle="toggle" data-on="Erase Stroke" data-off="Draw Stroke" data-onstyle="danger" data-offstyle="info">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="well">
+                    <p>
+                        <a id="editor_undo"> <span class="glyphicon glyphicon-share-alt" id="my-glyphicon"></span> Undo Stroke</a>
+                    </p>
+                    <p>
+                        <a id="editor_redo"> <span class="glyphicon glyphicon-share-alt"></span> Redo Stroke</a>
+                    </p>
+                    <p>
+                        <a id="editor_clear"> <span class="glyphicon glyphicon-trash"></span> Clear All</a>
+                    </p>
+                </div>
+
+
+                <div class="well">
+                    <a id="reset_zoom"><span class="glyphicon glyphicon-refresh"></span> Reset Zoom  </a>
+                    <br>
+                    <br>
+                    <a id="iconPlus"> <span class="glyphicon glyphicon-zoom-in" style="padding:1px 0px 10px 0px;"></span> </a>
+                    <br>
+                    <br>
+                    <a id="iconMinus"> <span class="glyphicon glyphicon-zoom-out"></span> </a>
+                </div>
+
+                <div class="w3-row w3-container" style="align:right;">
+                    <button type="button" class="btn btn-danger btn-xs" onclick="ReloadPage();">Reload Page </button>
+                </div>
+
+            </div>
+
+            <div class="col-sm-8">
+                <div style="background-color:#FFF; height:653px; overflow: scroll;" class="widget">
+                    <div id="sketchpad_editor"></div>
+                </div>
+
+                <div id="viewer" style="display:none">
+                    <h3>Viewer</h3>
+                    <p>
+                        <a href="javascript:void(0);" id="update_sketchpad_viewer"></a>
+                    </p>
+                    <div style="height:650px;" class="widget">
+                        <div id="sketchpad_viewer"></div>
+                    </div>
+                </div>
+
+
+                <div id="result_div" style="display: none">
+                    <h3>Result</h3>
+                    <p>
+                        The sketch is stored as JSON in an input field.
+                    </p>
+                    <form action="" method="post" onsubmit="return false;">
+                        <textarea id="input1" name="input1"></textarea>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="col-sm-2 sidenav text-left" id="right_col">
+                <div class="w3-row-padding">
+                    <label for="text" style="color:MidnightBlue; font-size:14px; padding:5px 0px 1px 0px;">Stroke Size 1-100  </label>
+                </div>
+
+                <div class="w3-row-padding" style="padding:10px 10px 14px 1px; ">
+                    <!-- <div class="w3-col s4" style="display:inline-block"> 1 </div> -->
+                    <input type="range" class="sliderbar" id="slider" min="1" max="100" value="5" style="display:block; width: 100%; margin-bottom:8px; margin-top:5px" link-to="text_box_name"></input>
+                    <!-- <div class="w3-col s4" style="display:inline-block"> 100 </div> -->
+                </div>
+                <div class="w3-row-padding" style="padding:5px 0px 14px 0px">
+                    <input type="text" class="input_text" id="text_box_name" value="5" style="margin-left:0px; width:100%"></input>
+                </div>
+
+                <div class="w3-row-padding" style='height:360px;'>
+                    <br>
+                    <p style="color:MidnightBlue; font-size:20px;"> Skin Layers </p>
+                    <form>
+                        <div style=" display: flex; justify-content: space-around">
+                            <ul class="skin" id="radioButtons">
+                                <li>
+                                    <input type="radio" id="editor_mole" name="selector" value="Mole">
+                                    <label for="editor_mole">Mole</label>
+                                    <div class="check"></div>
+                                </li>
+
+                                <li>
+                                    <input type="radio" id="editor_hair" name="selector" value="Hair">
+                                    <label for="editor_hair">Hair</label>
+                                    <div class="check"></div>
+                                </li>
+
+                                <li>
+
+                                    <input type="radio" id="editor_pore" name="selector" value="Pore">
+                                    <label for="editor_pore">Pore</label>
+                                    <div class="check"></div>
+                                </li>
+
+                                <li>
+
+                                    <input type="radio" id="editor_vessel" name="selector" value="vessel">
+                                    <label for="editor_vessel">Vessel</label>
+                                    <div class="check"></div>
+                                </li>
+
+                                <li>
+
+                                    <input type="radio" id="editor_black_pen" name="selector" value="wrinkle">
+                                    <label for="editor_black_pen">Wrinkle</label>
+                                    <div class="check"></div>
+                                </li>
+
+                                <li>
+                                    <input type="radio" id="editor_redness" name="selector" value="redness">
+                                    <label for="editor_redness">Redness</label>
+                                    <div class="check"></div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </form>
+                    </br>
+                </div>
+
+
+                <!-- <div style="border:1px solid MidnightBlue">
+                    <p style="color:MidnightBlue; font-size:15px; font-weight:bold"> HINT: </p>
+                    <p style="font-size:12px; font-style:italic">1. Select a Skin Layer Color </p>
+                    <p style="font-size:12px; font-style:italic">2. Keep SHIFT Key pressed to draw a straight line! </p>
+                    <p style="font-size:12px; font-style:italic">3. Click to toggle between Draw/Erase state</p>
+                </div> -->
+                <!-- div for left column side-->
+            </div>
+            <!-- div for row-content-->
+        </div>
+        <!-- div for container -->
+    </div>
+
+    <footer class="container-fluid text-right">
+        <div class="footer pull-right">
+            <p style="color:white">Author : Raluca Sandu </p>
+        </div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="js/vendor/jquery-migrate-1.4.1.js"></script>
+    <script src="https:///maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <!-- Necessary javascript files for Raphael paint component -->
+    <script type="text/javascript" src="js/vendor/touch-emulator.js"></script>
+    <!-- <script> TouchEmulator(); </script> -->
+    <script type="text/javascript" src="js/raphael.js"></script>
+    <script type="text/javascript" src="js/raphael.sketchpad.js"></script>
+    <script type="text/javascript" src="js/raphael.export.js"></script>
+    <!-- <script type="text/javascript" src="js/raphael-svg-import.js"></script> -->
+    <!-- <script type="text/javascript" src="js/canvas2image.js"></script> -->
+    <script type="text/javascript" src="js/rgbcolor.js"></script>
+    <script type="text/javascript" src="js/StackBlur.js"></script>
+    <script type="text/javascript" src="js/canvg.js"></script>
+
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript">
+        // set up the page
+        document.getElementById("save_svg").onclick = iat_save_svg;
+        document.getElementById("save_png").onclick = iat_save_png;
+        document.getElementById("save_json").onclick = iat_save_json;
+        document.getElementById("uploadImage").onchange = iat_read_image;
+        document.getElementById("LoadJSON").onchange = iat_load_json;
+        document.getElementById("sketchpad_editor").onload = iat_enable_all;
+        window.addEventListener("beforeunload", iat_warn_unsavedChanges);
+    </script>
+
+</body>
+
+</html>
