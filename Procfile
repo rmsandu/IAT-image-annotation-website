@@ -1,1 +1,1 @@
-web: bundle exec rails server -p $PORT
+web: vendor/bin/heroku-php-apache2
